@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>班级工作台 — 为每一块教室大屏，重新想象作业展示</title>
+<style>
+  :root{
+    --blue:#0066cc;
+    --blue-hover:#0077ed;
+    --ink:#1d1d1f;
+    --ink-2:#6e6e73;
+    --ink-on-dark:#f5f5f7;
+    --ink-2-on-dark:#a1a1a6;
+    --gray-bg:#f5f5f7;
+    --hairline:rgba(0,0,0,.12);
+    --hairline-dark:rgba(255,255,255,.16);
+    --maxw:980px;
+    --nav-h:44px;
+    --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  body{font-family:var(--font);color:var(--ink);background:#fff;line-height:1.47059;letter-spacing:-.01em;}
+
+  /* ===== Nav ===== */
+  .nav{
+    position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:9999;
+    background:rgba(255,255,255,.72);
+    backdrop-filter:saturate(180%) blur(20px);
+    -webkit-backdrop-filter:saturate(180%) blur(20px);
+    border-bottom:1px solid var(--hairline);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .nav-inner{width:100%;max-width:1024px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{font-size:17px;font-weight:600;letter-spacing:-.02em;color:var(--ink);display:flex;align-items:center;gap:7px;}
+  .nav-logo .dot{width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,#0a84ff,#30d158);display:inline-block;}
+  .nav-links{display:flex;gap:30px;}
+  .nav-links a{font-size:12px;color:var(--ink);text-decoration:none;opacity:.86;transition:opacity .2s,color .2s;}
+  .nav-links a:hover{color:var(--blue);opacity:1;}
+  @media(max-width:740px){.nav-links{display:none;}}
+
+  /* ===== Hero ===== */
+  .hero{padding:calc(var(--nav-h) + 64px) 22px 0;text-align:center;background:#fff;overflow:hidden;}
+  .hero .eyebrow{font-size:19px;font-weight:600;color:var(--blue);margin-bottom:6px;}
+  .hero h1{font-size:clamp(46px,8.5vw,92px);font-weight:700;letter-spacing:-.03em;line-height:1.03;color:var(--ink);}
+  .hero .lede{font-size:clamp(21px,3vw,34px);font-weight:600;letter-spacing:-.015em;color:var(--ink);margin-top:10px;}
+  .hero .sub{font-size:clamp(17px,2vw,21px);color:var(--ink-2);font-weight:400;margin-top:14px;max-width:640px;margin-left:auto;margin-right:auto;}
+  .hero-cta{display:flex;gap:30px;justify-content:center;margin-top:26px;font-size:19px;flex-wrap:wrap;}
+  .hero-cta a{color:var(--blue);text-decoration:none;}
+  .hero-cta a:hover{text-decoration:underline;}
+  .hero-cta a .arrow{display:inline-block;transition:transform .2s;}
+  .hero-cta a:hover .arrow{transform:translateX(3px);}
+
+  /* hero 大屏 mockup */
+  .screen-wrap{margin:56px auto 0;max-width:1120px;padding:0 22px;}
+  .screen{
+    position:relative;width:100%;aspect-ratio:16/9;border-radius:22px;overflow:hidden;
+    background:radial-gradient(120% 120% at 50% 0%,#1c2030 0%,#0b0d14 60%,#05060a 100%);
+    box-shadow:0 40px 90px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06);
+  }
+  .screen .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;color:#e8eaf0;font-size:13px;}
+  .screen .topbar .date{font-weight:600;opacity:.92;}
+  .screen .topbar .progress{display:flex;align-items:center;gap:8px;font-size:12px;opacity:.8;}
+  .screen .bar{width:120px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden;}
+  .screen .bar i{display:block;height:100%;width:62%;background:linear-gradient(90deg,#0a84ff,#30d158);border-radius:3px;}
+  .screen .weather-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);padding:5px 11px;border-radius:20px;font-size:12px;color:#e8eaf0;}
+  .screen .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 20px 20px;}
+  .hw{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;color:#f2f3f7;backdrop-filter:blur(8px);}
+  .hw .subj{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;opacity:.95;}
+  .hw .subj .sdot{width:9px;height:9px;border-radius:50%;}
+  .hw .title{font-size:15px;font-weight:600;margin-top:8px;letter-spacing:-.01em;}
+  .hw .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.14);font-size:11px;font-weight:700;margin-top:10px;}
+  .hw .desc{font-size:12px;color:#c7c9d2;margin-top:7px;line-height:1.45;}
+  @media(max-width:640px){.screen .grid{grid-template-columns:repeat(2,1fr);}.screen .topbar .progress{display:none;}}
+
+  /* ===== Statement ===== */
+  .statement{padding:120px 22px;text-align:center;background:#000;color:var(--ink-on-dark);}
+  .statement p{font-size:clamp(28px,4.5vw,52px);font-weight:700;letter-spacing:-.02em;line-height:1.1;max-width:880px;margin:0 auto;}
+  .statement .hl{color:#0a84ff;}
+
+  /* ===== Generic section ===== */
+  .section{padding:110px 22px;}
+  .section.gray{background:var(--gray-bg);}
+  .section.dark{background:#000;color:var(--ink-on-dark);}
+  .sec-head{max-width:var(--maxw);margin:0 auto 56px;text-align:center;}
+  .sec-head .kicker{font-size:19px;font-weight:600;color:var(--blue);margin-bottom:8px;}
+  .section.dark .sec-head .kicker{color:#0a84ff;}
+  .sec-head h2{font-size:clamp(32px,5vw,58px);font-weight:700;letter-spacing:-.02em;line-height:1.07;}
+  .sec-head p{font-size:clamp(18px,2.3vw,26px);font-weight:600;color:var(--ink-2);margin-top:16px;max-width:680px;margin-left:auto;margin-right:auto;line-height:1.35;}
+  .section.dark .sec-head p{color:var(--ink-2-on-dark);}
+  .learn{display:inline-flex;gap:6px;align-items:center;color:var(--blue);text-decoration:none;font-size:19px;margin-top:18px;}
+  .learn:hover{text-decoration:underline;}
+  .learn .arrow{transition:transform .2s;}
+  .learn:hover .arrow{transform:translateX(3px);}
+
+  /* feature grid */
+  .feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:1120px;margin:0 auto;}
+  @media(max-width:740px){.feat-grid{grid-template-columns:1fr;}}
+  .feat{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06),0 18px 40px rgba(0,0,0,.05);}
+  .section.gray .feat{background:#fff;}
+  .feat .thumb{aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;padding:26px;background:linear-gradient(135deg,#fbfbfd,#eef1f6);}
+  .feat.dark-thumb .thumb{background:radial-gradient(120% 120% at 50% 0%,#1c2030,#05060a);}
+  .feat .body{padding:24px 26px 30px;}
+  .feat h3{font-size:24px;font-weight:600;letter-spacing:-.015em;}
+  .feat .body p{font-size:15px;color:var(--ink-2);margin-top:8px;line-height:1.5;}
+  .feat .tag{font-size:13px;color:var(--ink-2);margin-top:14px;}
+
+  /* ===== 作业卡片放大 mockup ===== */
+  .card-mock{width:100%;max-width:300px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px;color:#f2f3f7;text-align:left;backdrop-filter:blur(8px);}
+  .card-mock .subj{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;}
+  .card-mock .subj .sdot{width:10px;height:10px;border-radius:50%;background:#ff9f0a;}
+  .card-mock .ttl{font-size:19px;font-weight:700;margin-top:10px;letter-spacing:-.01em;}
+  .card-mock .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.16);font-size:12px;font-weight:700;margin-top:12px;}
+  .card-mock .desc{font-size:13px;color:#c7c9d2;margin-top:9px;line-height:1.5;}
+
+  /* ===== 学科色系 ===== */
+  .palettes{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;max-width:980px;margin:0 auto;}
+  .palette{background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 14px 30px rgba(0,0,0,.05);min-width:150px;}
+  .palette .name{font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:12px;text-align:center;}
+  .palette .swatches{display:flex;gap:8px;justify-content:center;}
+  .palette .sw{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);}
+
+  /* ===== 天气预警 ===== */
+  .alerts{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:880px;margin:0 auto 36px;}
+  .alert{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:30px;font-weight:600;font-size:15px;color:#fff;}
+  .alert.blue{background:#007aff;}
+  .alert.yellow{background:#ffcc00;color:#3a2f00;}
+  .alert.orange{background:#ff9500;}
+  .alert.red{background:#ff3b30;}
+  .alert .lv{font-size:12px;font-weight:700;opacity:.85;}
+  .weather-card{background:linear-gradient(135deg,#1c2030,#0b0d14);max-width:520px;margin:0 auto;border-radius:22px;padding:28px;color:#f2f3f7;display:flex;align-items:center;justify-content:space-between;box-shadow:0 18px 40px rgba(0,0,0,.18);}
+  .weather-card .temp{font-size:54px;font-weight:700;letter-spacing:-.03em;}
+  .weather-card .meta{font-size:14px;color:#c7c9d2;text-align:right;line-height:1.6;}
+
+  /* ===== QQ 捕获（深色 section） ===== */
+  .qq-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:20px;max-width:420px;margin:0 auto;color:#f2f3f7;text-align:left;display:flex;gap:14px;align-items:flex-start;}
+  .qq-card .ava{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#12b7f5,#0a84ff);flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;}
+  .qq-card .who{font-size:14px;font-weight:600;}
+  .qq-card .msg{font-size:13px;color:#d6d8e0;margin-top:5px;line-height:1.5;}
+  .qq-card .badge{display:inline-block;margin-top:9px;font-size:11px;font-weight:700;color:#30d158;background:rgba(48,209,88,.14);padding:3px 9px;border-radius:20px;}
+
+  /* ===== 浮窗 ===== */
+  .pip-stage{position:relative;max-width:900px;margin:0 auto;aspect-ratio:16/9;border-radius:22px;background:radial-gradient(120% 120% at 50% 0%,#1c2030,#06070c);overflow:hidden;border:1px solid rgba(255,255,255,.06);}
+  .pip-stage .ghost{position:absolute;left:20px;top:20px;width:46%;height:60%;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);}
+  .pip{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:200px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:14px;color:#f2f3f7;backdrop-filter:blur(10px);}
+  .pip .subj{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;}
+  .pip .subj .sdot{width:9px;height:9px;border-radius:50%;background:#bf5af2;}
+  .pip .ttl{font-size:15px;font-weight:600;margin-top:7px;}
+  .pip-peek{position:absolute;right:0;top:50%;transform:translateY(-50%);width:24px;height:64px;border-radius:12px 0 0 12px;background:linear-gradient(135deg,#bf5af2,#0a84ff);box-shadow:-2px 0 10px rgba(0,0,0,.3);}
+
+  /* ===== 隐私 / 开源（灰底） ===== */
+  .privacy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:980px;margin:0 auto;}
+  @media(max-width:740px){.privacy-grid{grid-template-columns:1fr;}}
+  .privacy-grid .pc{background:#fff;border-radius:20px;padding:30px 26px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 14px 30px rgba(0,0,0,.05);}
+  .privacy-grid .pc .ic{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#0a84ff22,#30d15822);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px;}
+  .privacy-grid .pc h3{font-size:20px;font-weight:600;letter-spacing:-.01em;}
+  .privacy-grid .pc p{font-size:14px;color:var(--ink-2);margin-top:8px;line-height:1.5;}
+
+  /* ===== 技术（深色） ===== */
+  .tech-line{max-width:760px;margin:0 auto;text-align:center;font-size:clamp(19px,2.4vw,26px);font-weight:600;color:var(--ink-on-dark);line-height:1.4;}
+  .tech-tags{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:780px;margin:34px auto 0;}
+  .tech-tags span{font-size:14px;color:#e8eaf0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:8px 16px;border-radius:30px;}
+
+  /* ===== CTA ===== */
+  .cta{padding:130px 22px 120px;text-align:center;background:#000;color:var(--ink-on-dark);}
+  .cta h2{font-size:clamp(34px,6vw,64px);font-weight:700;letter-spacing:-.025em;line-height:1.05;}
+  .cta p{font-size:clamp(18px,2.3vw,24px);color:var(--ink-2-on-dark);margin-top:18px;font-weight:400;}
+  .cta .btn{display:inline-block;margin-top:34px;background:var(--blue);color:#fff;font-size:19px;font-weight:500;padding:12px 30px;border-radius:30px;text-decoration:none;transition:background .2s;}
+  .cta .btn:hover{background:var(--blue-hover);}
+
+  /* ===== Footnotes ===== */
+  .footnotes{background:#f5f5f7;color:var(--ink-2);font-size:12px;line-height:1.6;padding:34px 22px;max-width:none;}
+  .footnotes .inner{max-width:var(--maxw);margin:0 auto;}
+  .footnotes a{color:var(--blue);text-decoration:none;}
+  .footnotes a:hover{text-decoration:underline;}
+  .footnotes .legal{margin-top:18px;opacity:.8;}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(46px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none;}}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo"><span class="dot"></span>班级工作台</div>
+    <div class="nav-links">
+      <a href="#features">功能</a>
+      <a href="#subjects">学科</a>
+      <a href="#weather">天气</a>
+      <a href="#qq">QQ 捕获</a>
+      <a href="#privacy">隐私与开源</a>
+      <a href="#cta">下载</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="eyebrow reveal">班级工作台 1.0</div>
+  <h1 class="reveal">班级工作台。</h1>
+  <div class="lede reveal">为每一块教室大屏，重新想象作业展示。</div>
+  <p class="sub reveal">作业、学科、天气、晚修进度，汇成一块会呼吸的课堂大屏。本地优先，免费开源。</p>
+  <div class="hero-cta reveal">
+    <a href="#features">了解更多 <span class="arrow">›</span></a>
+    <a href="#cta">立即下载 <span class="arrow">›</span></a>
+  </div>
+
+  <div class="screen-wrap reveal">
+    <div class="screen">
+      <div class="topbar">
+        <div class="date">星期三 · 8 月 17 日</div>
+        <div class="progress">
+          <span>晚修第 2 节</span>
+          <span class="bar"><i></i></span>
+          <span>已过 38 分钟</span>
+        </div>
+        <div class="weather-pill">☀️ 28° 柳州</div>
+      </div>
+      <div class="grid">
+        <div class="hw">
+          <div class="subj"><span class="sdot" style="background:#ff9f0a"></span>数学</div>
+          <div class="title">二次函数图像练习</div>
+          <div class="num">3</div>
+          <div class="desc">完成课本 P45 第 1–5 题，拍照上传。</div>
+        </div>
+        <div class="hw">
+          <div class="subj"><span class="sdot" style="background:#0a84ff"></span>语文</div>
+          <div class="title">文言文背诵</div>
+          <div class="num">1</div>
+          <div class="desc">《岳阳楼记》第三段，明日早读抽查。</div>
+        </div>
+        <div class="hw">
+          <div class="subj"><span class="sdot" style="background:#30d158"></span>英语</div>
+          <div class="title">单元词汇听写</div>
+          <div class="num">7</div>
+          <div class="desc">Unit 3 单词表，错词每个抄三遍。</div>
+        </div>
+        <div class="hw">
+          <div class="subj"><span class="sdot" style="background:#bf5af2"></span>物理</div>
+          <div class="title">实验报告</div>
+          <div class="num">2</div>
+          <div class="desc">凸透镜成像，整理数据并绘图。</div>
+        </div>
+        <div class="hw">
+          <div class="subj"><span class="sdot" style="background:#ff453a"></span>化学</div>
+          <div class="title">方程式默写</div>
+          <div class="num">4</div>
+          <div class="desc">酸碱中和反应，共 8 条。</div>
+        </div>
+        <div class="hw">
+          <div class="subj"><span class="sdot" style="background:#64d2ff"></span>生物</div>
+          <div class="title">思维导图</div>
+          <div class="num">5</div>
+          <div class="desc">细胞结构一章，A3 纸手绘。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Statement -->
+<section class="statement">
+  <p class="reveal">不是又一个作业本。<br>是一块<span class="hl">懂课堂</span>的大屏。</p>
+</section>
+
+<!-- 作业管理 -->
+<section class="section" id="features">
+  <div class="sec-head reveal">
+    <div class="kicker">作业管理</div>
+    <h2>作业，一目了然。</h2>
+    <p>按日期与学科自动归位，瀑布流双栏布局，编号美化为圆圈徽章。回车即添加，点击即编辑。</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat reveal">
+      <div class="thumb"><div class="card-mock">
+        <div class="subj"><span class="sdot"></span>数学</div>
+        <div class="ttl">二次函数图像练习</div>
+        <div class="num">3</div>
+        <div class="desc">完成课本 P45 第 1–5 题，拍照上传。</div>
+      </div></div>
+      <div class="body">
+        <h3>学科色整体追色</h3>
+        <p>每张卡片以学科专属色渲染，整屏扫过就是一本彩色的课堂日历。</p>
+        <div class="tag">已内置 · 班级工作台 1.0</div>
+      </div>
+    </div>
+    <div class="feat reveal">
+      <div class="thumb" style="background:linear-gradient(135deg,#fbfbfd,#eef1f6);">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;">
+          <div style="background:#fff;border-radius:12px;padding:14px 18px;box-shadow:0 8px 20px rgba(0,0,0,.06);font-weight:600;">回车添加</div>
+          <div style="background:#fff;border-radius:12px;padding:14px 18px;box-shadow:0 8px 20px rgba(0,0,0,.06);font-weight:600;">双击编辑</div>
+          <div style="background:#fff;border-radius:12px;padding:14px 18px;box-shadow:0 8px 20px rgba(0,0,0,.06);font-weight:600;">二次确认删除</div>
+        </div>
+      </div>
+      <div class="body">
+        <h3>顺手的增删改</h3>
+        <p>底栏学科按钮一键添加，卡片点击展开编辑，危险操作有二次确认。</p>
+        <div class="tag">已内置 · 班级工作台 1.0</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 学科系统 -->
+<section class="section gray" id="subjects">
+  <div class="sec-head reveal">
+    <div class="kicker">学科系统</div>
+    <h2>五套色系，随手切换。</h2>
+    <p>经典、莫兰迪、马卡龙、国风、自然——内置取色器，给每个学科一个好认的颜色。</p>
+  </div>
+  <div class="palettes reveal">
+    <div class="palette"><div class="name">经典</div><div class="swatches"><span class="sw" style="background:#ff9f0a"></span><span class="sw" style="background:#0a84ff"></span><span class="sw" style="background:#30d158"></span></div></div>
+    <div class="palette"><div class="name">莫兰迪</div><div class="swatches"><span class="sw" style="background:#b0a8a0"></span><span class="sw" style="background:#9aa7b0"></span><span class="sw" style="background:#a8b0a0"></span></div></div>
+    <div class="palette"><div class="name">马卡龙</div><div class="swatches"><span class="sw" style="background:#ffadad"></span><span class="sw" style="background:#a0c4ff"></span><span class="sw" style="background:#bdb2ff"></span></div></div>
+    <div class="palette"><div class="name">国风</div><div class="swatches"><span class="sw" style="background:#c0392b"></span><span class="sw" style="background:#27ae60"></span><span class="sw" style="background:#2980b9"></span></div></div>
+    <div class="palette"><div class="name">自然</div><div class="swatches"><span class="sw" style="background:#52b788"></span><span class="sw" style="background:#74c0fc"></span><span class="sw" style="background:#ffd43b"></span></div></div>
+  </div>
+</section>
+
+<!-- 天气与预警 -->
+<section class="section" id="weather">
+  <div class="sec-head reveal">
+    <div class="kicker">天气与预警</div>
+    <h2>把天气，放上大屏。</h2>
+    <p>双引擎支持：Open-Meteo 免费即开即用，和风天气精准可选。蓝黄橙红四级预警，顶栏一眼可见。</p>
+  </div>
+  <div class="alerts reveal">
+    <div class="alert blue"><span class="lv">蓝色</span> 一般性提示</div>
+    <div class="alert yellow"><span class="lv">黄色</span> 需注意</div>
+    <div class="alert orange"><span class="lv">橙色</span> 尽量不要外出</div>
+    <div class="alert red"><span class="lv">红色</span> 最高级别</div>
+  </div>
+  <div class="weather-card reveal">
+    <div>
+      <div class="temp">28°</div>
+      <div style="font-size:14px;color:#c7c9d2;">柳州 · 晴转多云</div>
+    </div>
+    <div class="meta">空气质量 优<br>湿度 62% · 东南风 2 级<br>明日 27° / 34°</div>
+  </div>
+  <div style="text-align:center;">
+    <a class="learn reveal" href="#privacy">了解数据来源 <span class="arrow">›</span></a>
+  </div>
+</section>
+
+<!-- QQ 捕获（深色） -->
+<section class="section dark" id="qq">
+  <div class="sec-head reveal">
+    <div class="kicker">QQ 捕获</div>
+    <h2>作业消息，自动上屏。</h2>
+    <p>随附的本地辅助程序读取系统通知，把 QQ 里的作业消息提取出来，等你确认后一键采纳。所有处理只在你的设备上。</p>
+  </div>
+  <div class="qq-card reveal">
+    <div class="ava">Q</div>
+    <div>
+      <div class="who">数学课代表</div>
+      <div class="msg">今晚作业：课本 P45 第 1–5 题，明天交。</div>
+      <div class="badge">已识别为作业候选</div>
+    </div>
+  </div>
+  <div style="text-align:center;">
+    <a class="learn reveal" href="#privacy">查看隐私说明 <span class="arrow">›</span></a>
+  </div>
+</section>
+
+<!-- 浮窗模式 -->
+<section class="section gray" id="pip">
+  <div class="sec-head reveal">
+    <div class="kicker">浮窗模式</div>
+    <h2>画中画，贴边就隐。</h2>
+    <p>每张作业卡片变成独立置顶小窗，贴屏幕右侧竖排。探头预展、点击展开、单卡关闭——大屏讲解时也不挡画面。</p>
+  </div>
+  <div class="pip-stage reveal">
+    <div class="ghost"></div>
+    <div class="pip">
+      <div class="subj"><span class="sdot"></span>物理</div>
+      <div class="ttl">实验报告</div>
+    </div>
+    <div class="pip-peek"></div>
+  </div>
+</section>
+
+<!-- 隐私与开源 -->
+<section class="section" id="privacy">
+  <div class="sec-head reveal">
+    <div class="kicker">隐私与开源</div>
+    <h2>你的数据，归你所有。</h2>
+    <p>无需注册、无云同步、无遥测。数据只存在你自己的电脑上。</p>
+  </div>
+  <div class="privacy-grid">
+    <div class="pc reveal">
+      <div class="ic">🔒</div>
+      <h3>本地优先</h3>
+      <p>作业与设置全部存于本机，不搭任何后端服务器，不上传、不共享。</p>
+    </div>
+    <div class="pc reveal">
+      <div class="ic">🛡️</div>
+      <h3>进程隔离</h3>
+      <p>渲染层无 Node 权限、沙箱化运行，仅通过白名单接口与主进程通信。</p>
+    </div>
+    <div class="pc reveal">
+      <div class="ic">⚡</div>
+      <h3>MIT 开源</h3>
+      <p>全部源代码以 MIT 许可证公开，安全机制可审计、可验证。详见《数据的安全性》。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 技术 -->
+<section class="section dark">
+  <div class="sec-head reveal">
+    <div class="kicker">技术架构</div>
+    <h2>为可靠而设计。</h2>
+  </div>
+  <p class="tech-line reveal">主进程领域模块化，渲染层原生 JavaScript，辅助程序原生编译——轻量、快、好维护。</p>
+  <div class="tech-tags reveal">
+    <span>Electron 33</span>
+    <span>原生 JS / CSS</span>
+    <span>主进程模块化</span>
+    <span>C# .NET 8 Sidecar</span>
+    <span>原子写入</span>
+    <span>毛玻璃 UI</span>
+    <span>MIT License</span>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="cta">
+  <h2 class="reveal">现在，让课堂亮起来。</h2>
+  <p class="reveal">免费、开源、本地优先。一块大屏，就够了。</p>
+  <a class="btn reveal" href="#">下载班级工作台</a>
+</section>
+
+<!-- Footnotes -->
+<footer class="footnotes">
+  <div class="inner">
+    <p>班级工作台是一款面向班级教学场景的本地桌面应用。天气数据由 Open-Meteo 与和风天气提供，仅供课堂展示参考，不构成任何决策依据。<sup><a href="#">1</a></sup></p>
+    <p style="margin-top:10px;">QQ 捕获功能依赖 Windows 系统通知权限，仅在本机读取与展示，不存储、不上传通知内容。<sup><a href="#">2</a></sup></p>
+    <p style="margin-top:10px;">本页面为产品介绍，功能以实际软件版本为准。软件以 MIT 开源许可证发布，源代码公开可审计。<sup><a href="#">3</a></sup></p>
+    <p class="legal">本页面为致敬苹果官网设计语言的风格演示，产品名称、功能与内容均属班级工作台，与 Apple Inc. 无关。Apple、iOS 等为 Apple Inc. 商标。</p>
+  </div>
+</footer>
+
+<script>
+  // 滚动渐入
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  },{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
