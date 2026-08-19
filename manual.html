@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>班级工作台 · 软件说明书</title>
+<title>班级工作台 · User Manual</title>
 <style>
 /* ============================================
  * Reset & Base
@@ -826,7 +826,7 @@ h3.subtitle {
     <div class="container text-center">
         <div class="version-badge">v2.0 · 2026 夏季更新</div>
         <h1 class="display">班级工作台</h1>
-        <h3 class="subtitle">为晚修而生的作业管理工具<br>玻璃拟态界面 · QQ自动捕获 · 天气预警</h3>
+        <h3 class="subtitle">为晚修而生的作业管理工具<br>玻璃拟态界面 · 画中画浮窗 · QQ自动捕获 · 天气预警</h3>
 
         <!-- 主界面 Mock -->
         <div class="mock mock-window" style="max-width: 760px; margin: 40px auto 0; text-align: left;">
@@ -912,7 +912,7 @@ h3.subtitle {
         <div class="stat-row" style="justify-content:center;">
             <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">学科配色</div></div>
             <div class="stat-item"><div class="stat-num">19</div><div class="stat-label">功能模块</div></div>
-            <div class="stat-item"><div class="stat-num">7</div><div class="stat-label">设置分类</div></div>
+            <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">设置分类</div></div>
             <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">月自动归档</div></div>
         </div>
     </div>
@@ -936,6 +936,8 @@ h3.subtitle {
             <div class="feat-card"><div class="feat-icon">🎨</div><div class="feat-name">5 套色系<span class="feat-tag">新</span></div><div class="feat-desc">靛蓝/翠绿/琥珀/玫红/紫，全局主题色切换</div></div>
             <div class="feat-card"><div class="feat-icon">👓</div><div class="feat-name">辅助功能<span class="feat-tag">新</span></div><div class="feat-desc">字号三档、动画减弱、模糊三档可调</div></div>
             <div class="feat-card"><div class="feat-icon">💾</div><div class="feat-name">备份与恢复<span class="feat-tag">新</span></div><div class="feat-desc">手动导出/导入、自动快照、历史回溯</div></div>
+            <div class="feat-card"><div class="feat-icon">🖼️</div><div class="feat-name">画中画浮窗</div><div class="feat-desc">作业卡片独立置顶小窗，贴边吸附，不打断其他操作</div></div>
+            <div class="feat-card"><div class="feat-icon">🔒</div><div class="feat-name">数据加密</div><div class="feat-desc">AES-256-GCM 透明加密，密钥由 Windows 凭据保护（DPAPI），用户可选</div></div>
         </div>
     </div>
 </section>
@@ -1381,8 +1383,8 @@ h3.subtitle {
 <section class="section section-light" id="settings">
     <div class="container">
         <div class="eyebrow">SETTINGS</div>
-        <h2 class="title">设置面板：7 大分类</h2>
-        <p class="desc">点击底栏"更多"按钮 → 设置。左侧导航栏 7 个分类，右侧内容区滚动浏览。Windows/macOS 风格分栏布局。</p>
+        <h2 class="title">设置面板：8 大分类</h2>
+        <p class="desc">点击底栏"更多"按钮 → 设置。左侧导航栏 8 个分类，右侧内容区滚动浏览。Windows/macOS 风格分栏布局。</p>
 
         <!-- 设置面板 Mock -->
         <div class="flex-row" style="margin-top:32px;align-items:center;">
@@ -1411,6 +1413,9 @@ h3.subtitle {
                                 </div>
                                 <div class="mock-settings-nav-item">
                                     <span class="nav-icon">💾</span><span>数据管理</span>
+                                </div>
+                                <div class="mock-settings-nav-item">
+                                    <span class="nav-icon">ℹ️</span><span>关于</span>
                                 </div>
                             </nav>
                             <div class="mock-settings-content">
@@ -1457,7 +1462,8 @@ h3.subtitle {
                     <div class="callout"><strong style="font-size:0.95rem;">👓 辅助功能</strong><p style="font-size:0.82rem;opacity:0.6;">字号三档（小/标准/大）、动画减弱、模糊三档（顶栏/卡片/弹窗）</p></div>
                     <div class="callout"><strong style="font-size:0.95rem;">📚 学科管理</strong><p style="font-size:0.82rem;opacity:0.6;">添加/删除学科、自定义颜色选择器（5 套预设色板 + 自定义 HEX）</p></div>
                     <div class="callout"><strong style="font-size:0.95rem;">📨 QQ监听</strong><p style="font-size:0.82rem;opacity:0.6;">开关监听、老师名单管理、关键词配置、评分规则展示、高级参数</p></div>
-                    <div class="callout"><strong style="font-size:0.95rem;">💾 数据管理</strong><p style="font-size:0.82rem;opacity:0.6;">备份导出/导入、自动快照、归档查看、数据清理</p></div>
+                    <div class="callout"><strong style="font-size:0.95rem;">💾 数据管理</strong><p style="font-size:0.82rem;opacity:0.6;">备份导出/导入、自动快照、归档查看、数据清理、本地加密（AES-256-GCM）</p></div>
+                    <div class="callout"><strong style="font-size:0.95rem;">ℹ️ 关于</strong><p style="font-size:0.82rem;opacity:0.6;">版本信息、MIT 开源协议、用户协议/隐私/安全等法律文档入口</p></div>
                 </div>
             </div>
         </div>
@@ -1524,7 +1530,7 @@ h3.subtitle {
     <div class="container">
         <div class="eyebrow">MORE MENU</div>
         <h2 class="title">更多菜单与实用工具</h2>
-        <p class="desc">底栏右侧的箭头按钮展开上拉菜单，提供复制排版图和设置入口。</p>
+        <p class="desc">底栏右侧的箭头按钮展开上拉菜单，提供复制排版图、画中画浮窗和设置入口。</p>
 
         <div class="flex-row" style="margin-top:32px;align-items:flex-start;">
             <!-- 更多菜单 Mock -->
@@ -1574,6 +1580,10 @@ h3.subtitle {
                                 <span class="more-icon">⚙️</span>
                                 <span>设置</span>
                             </div>
+                            <div class="mock-more-item">
+                                <span class="more-icon">🖼️</span>
+                                <span>浮窗</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1592,6 +1602,10 @@ h3.subtitle {
                     <div class="callout">
                         <strong>设置入口</strong>
                         <p style="font-size:0.85rem;opacity:0.6;">点击直接打开设置弹窗，与底栏"更多"按钮的箭头旋转动画联动。</p>
+                    </div>
+                    <div class="callout">
+                        <strong>画中画浮窗</strong>
+                        <p style="font-size:0.85rem;opacity:0.6;">更多菜单 → 浮窗：选中的作业卡片变为独立置顶小窗贴在屏幕右侧，可拖动、贴边吸附，自动隐藏主窗口；退出后主窗口自动恢复。</p>
                     </div>
                 </div>
             </div>
@@ -1710,11 +1724,11 @@ h3.subtitle {
     <div class="container">
         <div class="eyebrow">ARCHITECTURE</div>
         <h2 class="title">架构模块化重构</h2>
-        <p class="desc">主进程从单文件 1113 行拆分为 8 个模块，渲染进程从 15 个模块扩展到 29 个（含 7 个设置子模块）。</p>
+        <p class="desc">主进程拆分为 11 个领域模块，渲染进程 33 个模块（含 9 个设置子模块），单一职责、依赖注入，主进程与渲染层通过 IPC 胶水层通信。</p>
 
         <div style="margin-top:32px;">
             <div class="arch-layer">
-                <div class="arch-layer-title">主进程 main/（8 模块）</div>
+                <div class="arch-layer-title">主进程 main/（11 模块）</div>
                 <div class="arch-modules">
                     <span class="arch-module">constants.js</span>
                     <span class="arch-module">window.js</span>
@@ -1724,10 +1738,13 @@ h3.subtitle {
                     <span class="arch-module">archive.js</span>
                     <span class="arch-module">backup.js</span>
                     <span class="arch-module">auto-launch.js</span>
+                    <span class="arch-module">data-cipher.js</span>
+                    <span class="arch-module">data-store.js</span>
+                    <span class="arch-module">floating.js</span>
                 </div>
             </div>
             <div class="arch-layer">
-                <div class="arch-layer-title">渲染进程 src/scripts/（22 模块）</div>
+                <div class="arch-layer-title">渲染进程 src/scripts/（24 模块）</div>
                 <div class="arch-modules">
                     <span class="arch-module">config.js</span>
                     <span class="arch-module">state.js</span>
@@ -1748,12 +1765,15 @@ h3.subtitle {
                     <span class="arch-module">more-menu.js</span>
                     <span class="arch-module">window-controls.js</span>
                     <span class="arch-module">datepicker.js</span>
+                    <span class="arch-module">floating-mode.js</span>
+                    <span class="arch-module">floating-window.js</span>
+                    <span class="arch-module">wizard.js</span>
                     <span class="arch-module">main.js</span>
                     <span class="arch-module">settings.js</span>
                 </div>
             </div>
             <div class="arch-layer">
-                <div class="arch-layer-title">设置子模块 src/scripts/settings/（7 模块）</div>
+                <div class="arch-layer-title">设置子模块 src/scripts/settings/（9 模块）</div>
                 <div class="arch-modules">
                     <span class="arch-module">nav.js</span>
                     <span class="arch-module">general.js</span>
@@ -1763,6 +1783,7 @@ h3.subtitle {
                     <span class="arch-module">subjects.js</span>
                     <span class="arch-module">qq.js</span>
                     <span class="arch-module">data.js</span>
+                    <span class="arch-module">about.js</span>
                 </div>
             </div>
         </div>
@@ -1787,7 +1808,8 @@ h3.subtitle {
                 <tr><td>切换日期</td><td><code>点击日期按钮 / ‹ › 箭头</code></td><td>查看历史/未来作业，最早 3 个月前</td></tr>
                 <tr><td>自动编号</td><td><code>弹窗内回车</code></td><td>开启后回车自动续写编号 1. → 2. → 3.</td></tr>
                 <tr><td>复制排版图</td><td><code>更多 → 复制排版图</code></td><td>截图到剪贴板，自动隐藏浮层</td></tr>
-                <tr><td>打开设置</td><td><code>更多 → 设置</code></td><td>7 分类分栏设置面板</td></tr>
+                <tr><td>画中画浮窗</td><td><code>更多 → 浮窗</code></td><td>卡片变独立置顶小窗，贴边吸附，自动隐藏主窗口</td></tr>
+                <tr><td>打开设置</td><td><code>更多 → 设置</code></td><td>8 分类分栏设置面板</td></tr>
                 <tr><td>QQ 候选确认</td><td><code>点击底栏红点徽标</code></td><td>打开采纳面板，支持采纳/合并/忽略</td></tr>
                 <tr><td>查看归档</td><td><code>设置 → 数据管理 → 归档</code></td><td>按月浏览 3 个月前的作业</td></tr>
                 <tr><td>切换学科颜色</td><td><code>设置 → 学科管理 → 色块</code></td><td>5 套预设色板 + 自定义 HEX 输入</td></tr>
@@ -1810,7 +1832,7 @@ h3.subtitle {
         <div style="margin-top:24px;">
             <div class="faq-item">
                 <div class="faq-q">作业数据存储在哪里？</div>
-                <div class="faq-a">数据存储在 Electron 的 userData 目录下的 localStorage 中（键名 hw_v2），由 electron-store 持久化。归档数据以 JSON 文件形式存储在同目录下。可通过设置 → 数据管理导出备份。</div>
+                <div class="faq-a">数据以加密 JSON 文件存储在本机 userData 目录（AES-256-GCM 透明加密，密钥由 Windows 凭据保护 / DPAPI，可在设置 → 数据管理中开启或关闭）。归档数据同为本地 JSON 文件。可通过设置 → 数据管理导出备份。</div>
             </div>
             <div class="faq-item">
                 <div class="faq-q">QQ 自动捕获功能需要什么条件？</div>
@@ -1833,6 +1855,10 @@ h3.subtitle {
                 <div class="faq-a">如果开启了系统托盘功能（默认开启），点击关闭按钮会最小化到系统托盘而非退出。QQ 监听功能需要后台运行才能工作。可在设置中关闭托盘功能，或在托盘菜单中选择"退出"完全关闭。</div>
             </div>
             <div class="faq-item">
+                <div class="faq-q">什么是画中画浮窗？</div>
+                <div class="faq-a">更多菜单 → 浮窗：选中的作业卡片会变成一个独立的置顶小窗，贴在屏幕右侧，可拖动、贴边吸附成探头，不打断你其他操作；退出浮窗模式后主窗口自动恢复。浮窗中正在显示的卡片不会在主窗口网格里重复出现。</div>
+            </div>
+            <div class="faq-item">
                 <div class="faq-q">如何自定义学科和颜色？</div>
                 <div class="faq-a">设置 → 学科管理，可以添加新学科、删除已有学科、修改学科颜色。颜色选择器提供 5 套预设色板（30 种颜色）和自定义 HEX 输入。修改后全局生效，包括卡片色条、底栏胶囊、圆圈编号等。</div>
             </div>
@@ -1844,7 +1870,7 @@ h3.subtitle {
      Footer
      ============================================ -->
 <footer class="footer">
-    <p>班级工作台 v2.0 · 软件说明书 · 2026 年夏季更新</p>
+    <p>班级工作台 v2.0 · User Manual · 2026 年夏季更新</p>
     <p style="margin-top:8px;">Electron 33 · Node.js · C# .NET 8 · 玻璃拟态 UI</p>
 </footer>
 
