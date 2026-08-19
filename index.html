@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>班级工作台 · ClassWorkBench</title>
+<meta name="description" content="班级工作台 — 班级大屏作业展示系统，QQ 自动捕获作业、浮窗模式、天气预警、多学科管理。本地优先，MIT 开源。">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'HarmonyOS Sans', sans-serif;
+    background: #000;
+    color: #1D1D1F;
+    line-height: 1.47;
+    overflow-x: hidden;
+    letter-spacing: -0.01em;
+}
+:root {
+    --fg: #1D1D1F;
+    --fg-sub: #86868B;
+    --fg-inv: #F5F5F7;
+    --bg-page: #FAFAFB;
+    --bg-card: #fff;
+    --border: rgba(29,29,31,0.08);
+    --radius-card: 24px;
+    --radius-pill: 980px;
+    --green-start: #8EEA87;
+    --green-end: #00E37D;
+    --shadow-card: inset 0 0 0 1px rgba(29,29,31,0.06);
+    --shadow-card-hover: 0 8px 32px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(29,29,31,0.06);
+    --max-w: 1120px;
+    --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+}
+a { text-decoration: none; color: inherit; }
+
+/* ============ Navigation ============ */
+.nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    height: 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 max(20px, 5vw);
+    background: transparent;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    transition: background 0.4s var(--ease-out);
+    border-bottom: 1px solid transparent;
+}
+.nav.scrolled {
+    background: rgba(250,250,251,0.82);
+    border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+    font-size: 17px; font-weight: 700; color: var(--fg-inv);
+    letter-spacing: 0.5px; transition: color 0.4s;
+}
+.nav.scrolled .nav-logo { color: var(--fg); }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+    font-size: 13px; font-weight: 500; color: var(--fg-inv);
+    opacity: 0.9; transition: opacity 0.3s;
+}
+.nav.scrolled .nav-links a { color: var(--fg); }
+.nav-links a:hover { opacity: 1; }
+
+/* ============ Hero ============ */
+.hero {
+    min-height: 100vh;
+    background: #000;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 96px 24px 64px;
+    position: relative; overflow: hidden;
+}
+.hero-glow {
+    position: absolute; left: 50%; top: 40%;
+    transform: translate(-50%, -50%);
+    width: 720px; height: 720px;
+    background: radial-gradient(circle, rgba(0,227,125,0.18) 0%, rgba(0,227,125,0) 65%);
+    pointer-events: none;
+}
+.hero-content { position: relative; z-index: 3; max-width: 760px; }
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: var(--radius-pill);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: var(--fg-inv); font-size: 13px; font-weight: 500;
+    margin-bottom: 28px;
+}
+.hero-badge .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-start), var(--green-end));
+    box-shadow: 0 0 10px rgba(0,227,125,0.6);
+}
+.hero-title {
+    font-size: clamp(44px, 8vw, 72px);
+    font-weight: 700; color: var(--fg-inv);
+    letter-spacing: -0.03em; line-height: 1.05;
+    margin-bottom: 16px;
+}
+.hero-sub {
+    font-size: clamp(17px, 2.4vw, 22px);
+    color: rgba(245,245,247,0.7); font-weight: 400;
+    margin-bottom: 36px;
+}
+.hero-cta {
+    display: flex; gap: 14px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 44px;
+}
+.btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 28px; border-radius: var(--radius-pill);
+    font-size: 15px; font-weight: 600;
+    transition: transform 0.3s var(--ease-out), box-shadow 0.3s, background 0.3s;
+}
+.btn-primary {
+    background: #fff; color: #000;
+    box-shadow: 0 4px 20px rgba(255,255,255,0.2);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,255,255,0.3); }
+.btn-ghost {
+    background: transparent; color: var(--fg-inv);
+    border: 1px solid rgba(255,255,255,0.3);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+.btn svg { width: 16px; height: 16px; }
+.hero-stats {
+    display: flex; gap: clamp(24px, 5vw, 56px); justify-content: center;
+    flex-wrap: wrap;
+}
+.hero-stat-num {
+    font-size: 26px; font-weight: 700; color: var(--fg-inv);
+    margin-bottom: 4px;
+}
+.hero-stat-label { font-size: 13px; color: rgba(245,245,247,0.55); }
+
+/* ============ Entry Cards ============ */
+.entries {
+    background: var(--bg-page);
+    padding: 96px 24px 110px;
+}
+.entries-inner { max-width: var(--max-w); margin: 0 auto; }
+.section-head { text-align: center; margin-bottom: 52px; }
+.section-title {
+    font-size: clamp(28px, 4.5vw, 42px); font-weight: 700;
+    letter-spacing: -0.02em; margin-bottom: 12px;
+}
+.section-sub { color: var(--fg-sub); font-size: 16px; }
+.grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 34px 30px;
+    transition: transform 0.35s var(--ease-out), box-shadow 0.35s;
+    display: block;
+}
+.card:hover { transform: translateY(-6px); box-shadow: var(--shadow-card-hover); }
+.card-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    font-size: 24px; font-weight: 700; color: #fff;
+}
+.card-icon.g { background: linear-gradient(135deg, #00C96B, #00A3FF); }
+.card-icon.o { background: linear-gradient(135deg, #FF9F0A, #FF375F); }
+.card-icon.b { background: linear-gradient(135deg, #0A84FF, #5E5CE6); }
+.card-title { font-size: 21px; font-weight: 700; margin-bottom: 10px; }
+.card-desc { color: var(--fg-sub); font-size: 14px; margin-bottom: 22px; line-height: 1.6; }
+.card-meta {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: #00A868;
+}
+.card-meta svg { width: 15px; height: 15px; }
+
+/* ============ Download Band ============ */
+.download {
+    background: var(--bg-page);
+    border-top: 1px solid var(--border);
+    padding: 72px 24px;
+}
+.download-inner {
+    max-width: var(--max-w); margin: 0 auto;
+    background: #000; border-radius: 28px;
+    padding: 56px 40px; text-align: center;
+    position: relative; overflow: hidden;
+}
+.download-inner::before {
+    content: ''; position: absolute; left: 50%; top: -60%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,227,125,0.22) 0%, transparent 60%);
+    pointer-events: none;
+}
+.download-title { font-size: clamp(24px, 3.6vw, 34px); font-weight: 700; color: #fff; margin-bottom: 12px; position: relative; }
+.download-sub { color: rgba(245,245,247,0.7); margin-bottom: 30px; position: relative; font-size: 15px; }
+.download-meta { display: flex; justify-content: center; gap: 22px; flex-wrap: wrap; margin-bottom: 30px; position: relative; }
+.download-meta span { font-size: 13px; color: rgba(245,245,247,0.55); }
+.download-meta b { color: rgba(245,245,247,0.9); font-weight: 600; }
+.download .btn-primary { background: linear-gradient(135deg, #00E37D, #00A3FF); color: #fff; position: relative; }
+
+/* ============ Footer ============ */
+.footer { background: var(--bg-page); border-top: 1px solid var(--border); }
+.footer-inner {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 28px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+}
+.footer-copy { font-size: 13px; color: var(--fg-sub); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-size: 13px; color: var(--fg-sub); transition: color 0.3s; }
+.footer-links a:hover { color: var(--fg); }
+
+@media (max-width: 640px) {
+    .nav-links { display: none; }
+    .footer-inner { justify-content: center; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+    <a href="#hero" class="nav-logo">班级工作台</a>
+    <div class="nav-links">
+        <a href="#entries">文档入口</a>
+        <a href="#download">下载安装</a>
+        <a href="https://github.com/Windows-11-Pro/classworkbench" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/Windows-11-Pro/classworkbench/blob/master/LICENSE" target="_blank" rel="noopener">开源协议</a>
+    </div>
+</nav>
+
+<!-- ============ Hero ============ -->
+<section class="hero" id="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+        <div class="hero-badge">
+            <span class="dot"></span>
+            <span>v1.0.0 · 数据加密 · MIT 开源</span>
+        </div>
+        <h1 class="hero-title">班级工作台</h1>
+        <p class="hero-sub">为晚修而生的班级大屏作业展示系统<br>QQ 自动捕获作业 · 浮窗模式 · 天气预警 · 多学科管理</p>
+        <div class="hero-cta">
+            <a href="#download" class="btn btn-primary">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 1v9m0 0l-3.5-3.5M8 10l3.5-3.5M2.5 13h11"/></svg>
+                下载安装包
+            </a>
+            <a href="https://github.com/Windows-11-Pro/classworkbench" target="_blank" rel="noopener" class="btn btn-ghost">查看源码</a>
+        </div>
+        <div class="hero-stats">
+            <div><div class="hero-stat-num">8</div><div class="hero-stat-label">学科配色</div></div>
+            <div><div class="hero-stat-num">4</div><div class="hero-stat-label">级天气预警</div></div>
+            <div><div class="hero-stat-num">AES-256</div><div class="hero-stat-label">数据加密</div></div>
+            <div><div class="hero-stat-num">MIT</div><div class="hero-stat-label">开源协议</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ Entry Cards ============ -->
+<section class="entries" id="entries">
+    <div class="entries-inner">
+        <div class="section-head">
+            <h2 class="section-title">浏览文档</h2>
+            <p class="section-sub">从详细介绍到使用说明，快速了解班级工作台</p>
+        </div>
+        <div class="grid">
+            <a class="card" href="宣传册.html">
+                <div class="card-icon g">宣</div>
+                <h3 class="card-title">产品宣传册</h3>
+                <p class="card-desc">产品亮点、功能详解与界面展示，快速了解班级工作台能为你带来什么。</p>
+                <span class="card-meta">
+                    进入宣传册
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h9m0 0L8 4m4 4l-4 4"/></svg>
+                </span>
+            </a>
+            <a class="card" href="软件说明书.html">
+                <div class="card-icon b">说</div>
+                <h3 class="card-title">软件说明书</h3>
+                <p class="card-desc">从安装到日常使用，覆盖学科、晚修、天气、QQ 捕获、浮窗等全部功能的操作指引。</p>
+                <span class="card-meta">
+                    进入说明书
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h9m0 0L8 4m4 4l-4 4"/></svg>
+                </span>
+            </a>
+            <a class="card" href="宣传册-apple.html">
+                <div class="card-icon o">苹</div>
+                <h3 class="card-title">宣传册 · Apple 版</h3>
+                <p class="card-desc">专为 macOS / Apple 设备优化的视觉风格宣传页，同样的功能，不同的观感。</p>
+                <span class="card-meta">
+                    进入 Apple 版
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h9m0 0L8 4m4 4l-4 4"/></svg>
+                </span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ============ Download ============ -->
+<section class="download" id="download">
+    <div class="download-inner">
+        <h2 class="download-title">立即下载使用</h2>
+        <p class="download-sub">Windows 安装包 · 本地优先 · 无需联网即可完成主要功能</p>
+        <div class="download-meta">
+            <span>版本 <b>v1.0.0</b></span>
+            <span>平台 <b>Windows 10 / 11</b></span>
+            <span>体积 <b>约 84 MB</b></span>
+            <span>协议 <b>MIT 开源</b></span>
+        </div>
+        <a href="https://github.com/Windows-11-Pro/classworkbench/releases/download/v1.0.0/classworkbench-setup-1.0.0.exe" class="btn btn-primary" download>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 1v9m0 0l-3.5-3.5M8 10l3.5-3.5M2.5 13h11"/></svg>
+            下载安装包
+        </a>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-copy">班级工作台 · ClassWorkBench · MIT 开源 · Electron + C# .NET 8 Sidecar</div>
+        <div class="footer-links">
+            <a href="#hero">回到顶部</a>
+            <a href="#entries">文档入口</a>
+            <a href="#download">下载安装</a>
+            <a href="https://github.com/Windows-11-Pro/classworkbench" target="_blank" rel="noopener">GitHub</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// 滚动顶栏换色
+const nav = document.getElementById('nav');
+const onScroll = () => { nav.classList.toggle('scrolled', window.scrollY > 10); };
+window.addEventListener('scroll', onScroll);
+onScroll();
+</script>
+</body>
+</html>
